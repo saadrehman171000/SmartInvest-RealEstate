@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building2, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Building2, CheckCircle, XCircle, Clock, UserPlus } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { supabase } from "../lib/supabase";
 import type { AdvisorRequest } from "../types";
+import AddUserModal from "../components/AddUserModal";
+import { motion } from "framer-motion";
 
 export default function AdminDashboard() {
   const [requests, setRequests] = useState<AdvisorRequest[]>([]);
@@ -13,6 +15,7 @@ export default function AdminDashboard() {
   const [response, setResponse] = useState("");
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user || user.role !== "admin") {
@@ -192,6 +195,21 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
+
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setIsAddUserModalOpen(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-brand-navy text-white rounded-xl shadow-lg"
+        >
+          <UserPlus className="h-5 w-5" />
+          <span>Add New User</span>
+        </motion.button>
+
+        <AddUserModal
+          isOpen={isAddUserModalOpen}
+          onClose={() => setIsAddUserModalOpen(false)}
+        />
       </div>
 
       {/* Response Modal */}

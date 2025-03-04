@@ -11,6 +11,7 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  createUser: (email: string, password: string, name: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -88,6 +89,37 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error) {
       console.error('Auth check error:', error);
       set({ user: null, loading: false });
+    }
+  },
+  createUser: async (email, password, name) => {
+    try {
+      const { data: { user }, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name }
+        }
+      });
+
+      if (signUpError) throw signUpError;
+      if (!user) throw new Error('Failed to create user');
+
+      const { error: profileError } = await supabase.from('profiles').insert([{
+        id: user.id,
+        name,
+        email: user.email,
+        role: 'user'
+      }]);
+
+      if (profileError) throw profileError;
+
+      toast.success('User created successfully!');
+      
+    } catch (error) {
+      console.error('Create user error:', error);
+      const message = error instanceof Error ? error.message : 'Failed to create user';
+      toast.error(message);
+      throw error;
     }
   },
 }));
