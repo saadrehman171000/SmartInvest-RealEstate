@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "investoriq-79baa",
+    "gsutil cors set cors.json gs://investoriq-79baa.firebasestorage.app": "investoriq-79baa"
+  },
+  "targets": {},
+  "etags": {}
+}
